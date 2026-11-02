@@ -158,7 +158,10 @@ main { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 a
 
 .hero {
   position: relative;
-  min-height: 100svh;
+  /* the large viewport (browser toolbars hidden), so the next section never peeks in,
+     e.g. under Safari's compact bottom bar on iPhone */
+  min-height: 100vh;
+  min-height: 100lvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -286,6 +289,7 @@ main { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 a
 .scroll-cue {
   position: absolute;
   bottom: 36px;
+  bottom: calc(36px + 100lvh - 100svh);   /* stay clear of the toolbar while it's showing */
   left: 50%;
   translate: -50% 0;
   width: 24px;
