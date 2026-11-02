@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <radialGradient id="bg" cx="66" cy="56" r="95" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3A220E"/>
+      <stop offset="1" stop-color="#080605"/>
+    </radialGradient>
+    <linearGradient id="bar" x1="0" y1="20.5" x2="0" y2="97.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C87832"/>
+      <stop offset="1" stop-color="#FFF4DE"/>
+    </linearGradient>
+    <radialGradient id="core" cx="0.35" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#FFF4DE"/>
+      <stop offset="1" stop-color="#F2AA4C"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="halo" x="-300%" y="-300%" width="700%" height="700%">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+    <filter id="bloom" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="2"/></filter>
+    <clipPath id="tile"><rect width="120" height="120" rx="26"/></clipPath>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect width="120" height="120" fill="url(#bg)"/>
+    <path d="M36 28 V74 A16 16 0 0 0 52 90 H88" fill="none" stroke="#F2AA4C" stroke-width="15" stroke-linecap="round" filter="url(#glow)" opacity="0.9" style="mix-blend-mode:screen"/>
+    <path d="M36 28 V74 A16 16 0 0 0 52 90 H88" fill="none" stroke="url(#bar)" stroke-width="15" stroke-linecap="round"/>
+    <circle cx="66" cy="56" r="11" fill="#F2AA4C" filter="url(#halo)" style="mix-blend-mode:screen"/>
+    <circle cx="66" cy="56" r="11" fill="#F7CD82" filter="url(#bloom)" style="mix-blend-mode:screen"/>
+    <circle cx="66" cy="56" r="11" fill="url(#core)"/>
+    <circle cx="62.2" cy="51.6" r="3.5" fill="#FFFFFF" filter="url(#soft)" style="mix-blend-mode:screen"/>
+  </g>
+</svg>
