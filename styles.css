@@ -834,8 +834,9 @@ body.lumen-on .aurora__blob { opacity: 1; filter: blur(20px) brightness(2.5); tr
 }
 
 @media (max-width: 600px) {
-  /* phones: let the hero hug its content, and use one even rhythm (96px) between sections */
-  .hero { min-height: auto; padding: 128px 0 48px; }
+  /* phones: the hero still fills the first screen (with room for the scroll cue),
+     and sections after it use one even rhythm (96px) */
+  .hero { padding: 104px 0 96px; }
   .section { padding: 48px 0; }
   .contact { padding-bottom: 72px; }
   .section__label { margin-bottom: 28px; }
@@ -846,7 +847,6 @@ body.lumen-on .aurora__blob { opacity: 1; filter: blur(20px) brightness(2.5); tr
   body { font-size: 16px; }
   .nav__links { gap: 14px; }
   .nav__links a { font-size: 13px; }
-  .scroll-cue { display: none; }
   .btn--primary span { font-size: 13px; }
 }
 
