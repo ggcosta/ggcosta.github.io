@@ -98,7 +98,7 @@
   const canvas = document.querySelector(".hero__grid");
   if (hero && canvas) {
     const ctx = canvas.getContext("2d");
-    const GAP = 32;
+    let GAP = 32, BASE = 10, GROW = 10;   // smaller, sparser rackets on phones (set in resize)
     const RADIUS = 220;
     const REST_ANGLE = -0.6;           // resting tilt (radians)
 
@@ -135,7 +135,11 @@
     const resize = () => {
       dpr = Math.min(devicePixelRatio || 1, 2);
       const r = canvas.getBoundingClientRect();
+      // mobile address bars fire resize while scrolling; ignore small height-only changes
+      if (r.width === w && Math.abs(r.height - h) < 120) return;
       w = r.width; h = r.height;
+      const phone = w < 600;
+      GAP = phone ? 30 : 32; BASE = phone ? 7 : 10; GROW = phone ? 7 : 10;
       canvas.width = w * dpr; canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       dots = [];
@@ -147,11 +151,6 @@
       ctx.clearRect(0, 0, w, h);
       sx += (px - sx) * 0.12;
       sy += (py - sy) * 0.12;
-      if (!finePointer && !reduceMotion) {
-        // no cursor on touch: a slow spotlight wanders instead
-        sx = w * (0.5 + 0.35 * Math.sin(t / 3200));
-        sy = h * (0.45 + 0.25 * Math.cos(t / 4100));
-      }
       if (padel.active) {
         // rackets follow the padel ball while it's in play
         const r = canvas.getBoundingClientRect();
@@ -166,11 +165,11 @@
         let x = dots[i], y = dots[i + 1];
         const dx = x - sx, dy = y - sy;
         const d = Math.hypot(dx, dy);
-        let a = 0.13, size = 10, angle = REST_ANGLE;
+        let a = 0.13, size = BASE, angle = REST_ANGLE;
         if (d < RADIUS) {
           const f = 1 - d / RADIUS;
           a += f * f * 0.75;
-          size += f * 10;
+          size += f * GROW;
           // push rackets gently away and swing their heads to face outwards
           x += (dx / (d || 1)) * f * 10;
           y += (dy / (d || 1)) * f * 10;
@@ -183,7 +182,7 @@
           if (band < 40) {
             const f = (1 - band / 40) * Math.max(0, 1 - rp.r / 900);
             a += f * 0.8;
-            size += f * 8;
+            size += f * GROW * 0.8;
             angle += f * Math.PI;   // a little spin as the wave passes
           }
         }
@@ -214,13 +213,20 @@
       }, { passive: true });
       document.documentElement.addEventListener("pointerleave", () => { px = py = -9999; });
     }
-    addEventListener("pointerdown", (e) => {
+    addEventListener("click", (e) => {
       const r = overCanvas(e);
       if (!r || e.target.closest("a, button")) return;
       ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, r: 0 });
     });
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }).observe(hero);
     start();
+
+    // no cursor on touch screens: send a gentle wave across now and then
+    if (!finePointer && !reduceMotion) {
+      setInterval(() => {
+        if (visible && !padel.active) ripples.push({ x: w * (0.2 + Math.random() * 0.6), y: h * (0.25 + Math.random() * 0.5), r: 0 });
+      }, 5000);
+    }
 
     // a ripple once the name has landed
     setTimeout(() => ripples.push({ x: w * 0.3, y: h * 0.45, r: 0 }), charCount * 35 + 500);

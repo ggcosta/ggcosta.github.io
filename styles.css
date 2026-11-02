@@ -813,6 +813,12 @@ body.lumen-on .aurora__blob { opacity: 1; filter: blur(20px) brightness(2.5); tr
   .project--flip .project__media { order: 0; }
 }
 
+@media (max-width: 600px) {
+  /* phones: let the hero hug its content instead of filling the screen */
+  .hero { min-height: auto; padding: 128px 0 24px; }
+  .about { padding-top: 72px; }
+}
+
 @media (max-width: 480px) {
   body { font-size: 16px; }
   .nav__links { gap: 14px; }
