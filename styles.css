@@ -814,9 +814,12 @@ body.lumen-on .aurora__blob { opacity: 1; filter: blur(20px) brightness(2.5); tr
 }
 
 @media (max-width: 600px) {
-  /* phones: let the hero hug its content instead of filling the screen */
-  .hero { min-height: auto; padding: 128px 0 24px; }
-  .about { padding-top: 72px; }
+  /* phones: let the hero hug its content, and use one even rhythm (96px) between sections */
+  .hero { min-height: auto; padding: 128px 0 48px; }
+  .section { padding: 48px 0; }
+  .contact { padding-bottom: 72px; }
+  .section__label { margin-bottom: 28px; }
+  .projects { gap: 40px; }
 }
 
 @media (max-width: 480px) {
