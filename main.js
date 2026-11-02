@@ -132,6 +132,38 @@
     const ripples = [];
     let visible = true, raf = 0;
 
+    // device tilt, normalised to -1..1 on each axis
+    const tilt = { on: false, x: 0, y: 0, base: null };
+    const onOrient = (e) => {
+      if (e.beta == null || e.gamma == null) return;
+      const angle = screen.orientation?.angle ?? window.orientation ?? 0;
+      let gx = e.gamma, gy = e.beta;   // portrait: gamma = left/right, beta = towards/away
+      if (angle === 90) { gx = e.beta; gy = -e.gamma; }
+      else if (angle === -90 || angle === 270) { gx = -e.beta; gy = e.gamma; }
+      if (tilt.base === null) tilt.base = gy;   // however it's held at first is "centre"
+      tilt.base += (gy - tilt.base) * 0.004;    // and slowly re-centre as the grip changes
+      const clamp = (v) => Math.max(-1, Math.min(1, v));
+      tilt.x = clamp(gx / 25);
+      tilt.y = clamp((gy - tilt.base) / 20);
+      tilt.on = true;
+    };
+    function enableTilt() {
+      if (typeof DeviceOrientationEvent === "undefined") return;
+      addEventListener("deviceorientation", onOrient);
+      if (typeof DeviceOrientationEvent.requestPermission !== "function") return;
+      // iOS only hands out motion data after a tap: if none has arrived, offer a button for it
+      const chip = document.querySelector(".tilt-chip");
+      if (!chip) return;
+      setTimeout(() => { if (!tilt.on) chip.hidden = false; }, 1200);
+      chip.addEventListener("click", async () => {
+        try {
+          await DeviceOrientationEvent.requestPermission();
+        } catch { /* denied or unavailable: keep the waves */ }
+        chip.classList.add("is-gone");
+        setTimeout(() => chip.remove(), 400);
+      }, { once: true });
+    }
+
     const resize = () => {
       dpr = Math.min(devicePixelRatio || 1, 2);
       const r = canvas.getBoundingClientRect();
@@ -151,6 +183,13 @@
       ctx.clearRect(0, 0, w, h);
       sx += (px - sx) * 0.12;
       sy += (py - sy) * 0.12;
+      if (tilt.on && !padel.active) {
+        // phones: the light rolls around as you tilt the device
+        const tx = w * (0.5 + tilt.x * 0.45), ty = h * (0.45 + tilt.y * 0.4);
+        if (sx < -1000) { sx = tx; sy = ty; }
+        sx += (tx - sx) * 0.15;
+        sy += (ty - sy) * 0.15;
+      }
       if (padel.active) {
         // rackets follow the padel ball while it's in play
         const r = canvas.getBoundingClientRect();
@@ -221,10 +260,13 @@
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }).observe(hero);
     start();
 
-    // no cursor on touch screens: send a gentle wave across now and then
+    // no cursor on touch screens: tilt the phone to move the light (see enableTilt)
+    if (!finePointer && !reduceMotion) enableTilt();
+
+    // and until tilt data arrives, send a gentle wave across now and then
     if (!finePointer && !reduceMotion) {
       setInterval(() => {
-        if (visible && !padel.active) ripples.push({ x: w * (0.2 + Math.random() * 0.6), y: h * (0.25 + Math.random() * 0.5), r: 0 });
+        if (visible && !padel.active && !tilt.on) ripples.push({ x: w * (0.2 + Math.random() * 0.6), y: h * (0.25 + Math.random() * 0.5), r: 0 });
       }, 5000);
     }
 

@@ -171,6 +171,7 @@ main { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 a
   bottom: 0;
   left: 50%;
   width: 100vw;
+  height: 100%;           /* a canvas keeps its 2:1 shape unless told otherwise */
   translate: -50% 0;
   z-index: -1;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 70%, transparent);
@@ -180,6 +181,25 @@ main { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 a
 .hero__content { will-change: transform, opacity; }
 
 .hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 44px; }
+
+.tilt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: opacity 0.4s;
+}
+
+.tilt-chip[hidden] { display: none; }
+.tilt-chip::before { content: "⟲"; font-size: 14px; }
+.tilt-chip.is-gone { opacity: 0; }
 
 .hero__eyebrow { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
 
